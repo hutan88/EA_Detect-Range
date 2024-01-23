@@ -94,11 +94,11 @@ void OnTick()
       }
    }
 
-   if(((rangeClose >=0 && lastTick.time >= range.closeTime
+   if(((rangeClose >=0 && lastTick.time >= range.closeTime)
         || (range.f_high_breakout && range.f_low_breakout)
         ||(range.endTime==0)
         ||(range.endTime!=0 && lastTick.time>range.endTime && !range.f_entry))
-       && countOpenPosition()==0)) {
+       && CountOpenPosition()==0) {
 
       CalculateRange();
    }
@@ -252,7 +252,7 @@ bool ClosePosition()
 {
 
    int total = PositionsTotal();
-   for(int i=total; i>0; i--) {
+   for(int i=total-1; i>0; i--) {
       if(total != PositionsTotal()) {
          total = PositionsTotal();
          i = total;
@@ -287,13 +287,17 @@ bool ClosePosition()
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-int countOpenPosition()
+int CountOpenPosition()
 {
    int counter = 0;
    int total = PositionsTotal();
-   for(int i=total;i>0;i--)
+   for(int i=total-1;i>0;i--)
      {
       ulong ticket = PositionGetTicket(i);
+      if(ticket <= 0)
+        {
+         return -1;
+        }
       if(!PositionSelectByTicket(ticket)){Print("Failed to select position by ticket");return -1;}
       ulong magicnumber;
       if(!PositionGetInteger(POSITION_MAGIC,magicnumber))
